@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎓 Placement Portal
+# Placement Portal
 
 ### A full-stack college recruitment management system — built for students, companies & admins.
 
