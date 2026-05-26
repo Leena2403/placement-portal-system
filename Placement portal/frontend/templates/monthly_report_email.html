@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Monthly Placement Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f7f6; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td style="padding: 20px 0 30px 0;">
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <tr>
+                        <td align="center" bgcolor="#e67e22" style="padding: 40px 0 30px 0; color: #ffffff;">
+                            <p style="margin: 0; text-transform: uppercase; letter-spacing: 2px; font-size: 14px; font-weight: bold; opacity: 0.9;">IIT MADRAS — PLACEMENT PORTAL</p>
+                            <h1 style="margin: 20px 0 10px 0; font-size: 36px;">Monthly Activity</h1>
+                            <div style="background-color: rgba(255,255,255,0.2); display: inline-block; padding: 8px 20px; border-radius: 20px; font-weight: bold;">
+                                📊 Executive Summary
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 40px 30px 40px 30px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td style="color: #2c3e50; font-size: 18px; padding-bottom: 20px;">
+                                        Hi <strong>Administrator</strong>, here is the performance report for <strong>{{ date_str }}</strong>.
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td style="padding: 20px; border: 1px solid #eeeeee; border-radius: 15px; background-color: #fafafa;">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td align="center" style="padding: 10px;">
+                                                    <p style="margin: 0; color: #7f8c8d; font-size: 12px; font-weight: bold; text-transform: uppercase;">Drives Conducted</p>
+                                                    <h2 style="margin: 5px 0; font-size: 48px; color: #e67e22;">{{ num_drives }}</h2>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td height="1" bgcolor="#eeeeee" style="font-size: 1px; line-height: 1px;">&nbsp;</td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                        <tr>
+                                                            <td width="50%" align="center" style="padding: 20px 10px;">
+                                                                <p style="margin: 0; color: #7f8c8d; font-size: 12px; font-weight: bold; text-transform: uppercase;">Applications</p>
+                                                                <h3 style="margin: 5px 0; font-size: 24px; color: #2c3e50;">{{ total_apps }}</h3>
+                                                            </td>
+                                                            <td width="1" bgcolor="#eeeeee" style="font-size: 1px; line-height: 1px;">&nbsp;</td>
+                                                            <td width="50%" align="center" style="padding: 20px 10px;">
+                                                                <p style="margin: 0; color: #7f8c8d; font-size: 12px; font-weight: bold; text-transform: uppercase;">Selected</p>
+                                                                <h3 style="margin: 5px 0; font-size: 24px; color: #27ae60;">{{ total_selected }}</h3>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding-top: 30px; color: #95a5a6; font-size: 14px; line-height: 20px; text-align: center;">
+                                        💡 <em>This is an automated system-generated report. Log in to the Admin Dashboard for more details.</em>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td bgcolor="#fdfdfd" style="padding: 20px 30px; border-top: 1px solid #eeeeee; text-align: center; color: #bdc3c7; font-size: 12px;">
+                            &copy; 2026 Institute Placement Cell | Confidential
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

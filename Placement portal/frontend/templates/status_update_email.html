@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Placement Update</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f0f4f8; font-family:Segoe UI, Arial, sans-serif;">
+
+{% set theme = {
+  'Selected': {
+    'gradient': 'linear-gradient(135deg, #16a34a, #15803d)',
+    'color': '#16a34a',
+    'soft_bg': '#f0fdf4',
+    'text': '#15803d',
+    'badge': '🎉 Congratulations'
+  },
+  'Shortlisted': {
+    'gradient': 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+    'color': '#2563eb',
+    'soft_bg': '#eff6ff',
+    'text': '#1d4ed8',
+    'badge': '📋 Update on your Application'
+  },
+  'Rejected': {
+    'gradient': 'linear-gradient(135deg, #dc2626, #b91c1c)',
+    'color': '#dc2626',
+    'soft_bg': '#fef2f2',
+    'text': '#b91c1c',
+    'badge': '📩 Application Decision'
+  }
+} %}
+
+{% set current = theme.get(status, {
+  'gradient': 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+  'color': '#7c3aed',
+  'soft_bg': '#faf5ff',
+  'text': '#6d28d9',
+  'badge': '📬 Application Update'
+}) %}
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8; padding:40px 0;">
+<tr>
+<td align="center">
+
+<!-- CARD -->
+<table width="600" cellpadding="0" cellspacing="0"
+  style="background:#ffffff; border-radius:16px; overflow:hidden; max-width:600px; width:90%;">
+
+  <!-- HEADER -->
+  <tr>
+    <td align="center" style="background:{{ current.gradient }}; padding:36px 40px 28px;">
+
+      <p style="margin:0 0 16px; color:rgba(255,255,255,0.75); font-size:13px; letter-spacing:2px;">
+        IIT Madras — Placement Portal
+      </p>
+
+      <!-- Badge -->
+      <div style="display:inline-block; background:rgba(255,255,255,0.18);
+                  border:1px solid rgba(255,255,255,0.4);
+                  border-radius:50px; padding:6px 20px; margin-bottom:16px;">
+        <span style="color:#fff; font-size:13px; font-weight:600;">
+          {{ current.badge }}
+        </span>
+      </div>
+
+      <h1 style="margin:0; color:#fff; font-size:34px; font-weight:800;">
+        {{ status }}
+      </h1>
+
+    </td>
+  </tr>
+
+  <!-- BODY -->
+  <tr>
+    <td style="padding:36px 40px 20px;">
+
+      <!-- DRIVE CARD -->
+      <table width="100%" cellpadding="0" cellspacing="0"
+        style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; margin-bottom:28px;">
+        <tr>
+          <td style="padding:20px 24px;">
+            <p style="margin:0; font-size:11px; color:#94a3b8;">DRIVE</p>
+            <p style="margin:4px 0 0; font-size:20px; font-weight:700;">
+              {{ drive_title }}
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:0 24px 20px;">
+            <hr style="border:none; border-top:1px solid #e2e8f0; margin:0 0 16px;">
+
+            <table width="100%">
+              <tr>
+                {% if interview_date %}
+                <td width="50%">
+                  <p style="font-size:11px; color:#94a3b8;">DATE & TIME</p>
+                  <p style="font-size:14px;">{{ interview_date }}</p>
+                </td>
+                {% endif %}
+
+                {% if interview_mode %}
+                <td width="50%">
+                  <p style="font-size:11px; color:#94a3b8;">MODE</p>
+                  <p style="font-size:14px;">{{ interview_mode }}</p>
+                </td>
+                {% endif %}
+              </tr>
+            </table>
+
+            {% if interview_link %}
+            <div style="margin-top:16px;">
+              <a href="{{ interview_link }}"
+                style="display:inline-block; background:#eff6ff; color:#2563eb;
+                       padding:8px 16px; border-radius:8px; text-decoration:none;">
+                Join Interview
+              </a>
+            </div>
+            {% endif %}
+
+          </td>
+        </tr>
+      </table>
+
+      <!-- HR MESSAGE -->
+      {% if hr_message %}
+      <div style="border-left:4px solid {{ current.color }};
+                  background:#f8fafc; padding:16px 20px; margin-bottom:28px;">
+        <p style="font-size:12px; color:#94a3b8;">MESSAGE FROM HR</p>
+        <p style="font-size:15px;">{{ hr_message }}</p>
+      </div>
+      {% endif %}
+
+      <!-- CTA -->
+      <div style="background:{{ current.soft_bg }};
+                  border-radius:10px; padding:16px 20px;">
+
+        <p style="margin:0; color:{{ current.text }}; font-size:14px;">
+
+          {% if status == 'Selected' %}
+          🎉 <strong>You’ve been selected!</strong> Expect further communication soon.
+
+          {% elif status == 'Shortlisted' %}
+          📋 <strong>You’re shortlisted.</strong> Prepare for the next round.
+
+          {% elif status == 'Rejected' %}
+          💪 <strong>Keep going.</strong> More opportunities are ahead.
+
+          {% else %}
+          📬 Your application has been updated.
+          {% endif %}
+
+        </p>
+
+      </div>
+
+    </td>
+  </tr>
+
+  <!-- FOOTER -->
+  <tr>
+    <td style="padding:24px 40px; text-align:center; font-size:12px; color:#94a3b8;">
+      This is an automated email. Do not reply.
+    </td>
+  </tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>

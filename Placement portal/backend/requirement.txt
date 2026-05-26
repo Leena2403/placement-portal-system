@@ -1,0 +1,12 @@
+flask
+flask_restful
+flask_cors
+flask_sqlalchemy
+flask_security_too
+cryptography   
+bcrypt   
+celery
+redis             
+flask_mail
+python-dotenv      
+email_validator    
