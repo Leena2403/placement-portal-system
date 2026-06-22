@@ -7,9 +7,15 @@ from backend.controllers.user_datastore import user_datastore, cache, mail
 from backend.controllers.routes import initialize_routes
 from flask_cors import CORS
 from celery import Celery
+import os
+from dotenv import load_dotenv
 
 # Resolves the absolute path of the current directory for reliable file referencing.
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+load_dotenv()                   
+
+from flask import Flask, render_template
 
 # Configures and returns a Celery instance tied to the Flask application context.
 def make_celery(app):
