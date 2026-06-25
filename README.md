@@ -22,6 +22,13 @@
 
 ## 🧭 Overview
 
+<img width="1143" height="711" alt="Screenshot 2026-06-25 at 9 09 37 AM" src="https://github.com/user-attachments/assets/fd136ff6-69fe-44e2-9177-28b5bcad6a64" />
+
+<img width="1165" height="717" alt="Screenshot 2026-06-25 at 9 10 02 AM" src="https://github.com/user-attachments/assets/2aaa5b84-0764-4203-a72b-92f6e7e3d01c" />
+
+<img width="1192" height="688" alt="Screenshot 2026-06-25 at 9 10 15 AM" src="https://github.com/user-attachments/assets/aad20eab-6b1c-443b-b9db-d31930ac6720" />
+
+
 **Placement Portal** is a production-grade web application that streamlines the entire campus recruitment lifecycle — from company registration and drive creation to student applications, status tracking, automated email reminders, and monthly analytics reports.
 
 The system supports **three distinct user roles**, each with a purpose-built dashboard:
