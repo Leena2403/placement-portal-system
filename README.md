@@ -122,7 +122,7 @@ Blacklisted students cannot use the assistant.
 │  Flask-Security →  Token auth · Role-based access control       │
 │  Flask-CORS     →  Cross-origin support                         │
 │  Flask-Caching  →  Redis-backed (5 min TTL)                     │
-│  Flask-Mail     →  SMTP via Gmail (SSL/465)                     │
+│  Flask-Mail     →  SMTP · Mailpit locally / Gmail via .env      │
 │  Chatbot API    →  Groq LLM (HTTPS) · /api/student/chat         │
 └──────────┬─────────────────────────┬───────────────────────────┘
            │                         │
@@ -158,6 +158,7 @@ Blacklisted students cannot use the assistant.
 |------|---------|
 | Python | 3.11+ |
 | Redis | Any recent version |
+| Mailpit | Any recent version (local test inbox for emails) |
 | pip | Latest |
 | Groq API key | Free, from [console.groq.com/keys](https://console.groq.com/keys) (needed only for the AI assistant) |
 
@@ -192,6 +193,19 @@ pip install -r backend/requirement.txt
 redis-server
 # or if Redis is installed as a service: sudo systemctl start redis
 ```
+
+### 4b · Start Mailpit (test inbox for emails)
+
+The app sends reminder, status-update and monthly-report emails. By default they go to **[Mailpit](https://mailpit.axllent.org)**, a local inbox, so no email password is needed and nothing reaches real people.
+
+```bash
+brew install mailpit
+brew services start mailpit     # or just run: mailpit
+```
+
+Open **http://localhost:8025** to read every email the app sends.
+
+> **Want real emails?** Add `MAIL_SERVER`, `MAIL_PORT`, `MAIL_USE_SSL`, `MAIL_USERNAME`, `MAIL_PASSWORD` (a [Gmail App Password](https://myaccount.google.com/apppasswords)) and `MAIL_SENDER` to `.env`. See `.env.example`. Never put them in `config.py`.
 
 ### 5 · Configure the AI assistant (Groq)
 
@@ -239,7 +253,7 @@ python3 -m celery -A app.celery_app beat --loglevel=info
 | Email | `admin@gmail.com` |
 | Password | `admin123` |
 
-> ⚠️ **Security note:** Change `SECRET_KEY`, `SECURITY_PASSWORD_SALT`, and `MAIL_PASSWORD` in `config.py` before deploying. Never commit real credentials to version control — use environment variables or a `.env` file.
+> ⚠️ **Security note:** Change `SECRET_KEY` and `SECURITY_PASSWORD_SALT` in `config.py` before deploying. Mail credentials and API keys are read from environment variables / `.env` (git-ignored). Never commit real credentials.
 
 ---
 
@@ -489,7 +503,8 @@ Generates a CSV of a student's application history and saves it to `frontend/sta
 
 > Great places to contribute!
 
-- [ ] **Hardcoded credentials in `config.py`** — move `SECRET_KEY`, `MAIL_PASSWORD` etc. to `.env` + `python-dotenv`
+- [x] ~~Hardcoded mail credentials~~ — mail settings now come from `.env`, with Mailpit as the safe default
+- [ ] **`SECRET_KEY` / `SECURITY_PASSWORD_SALT` still hardcoded** — move them to `.env` too
 - [ ] **`.gitignore` is minimal** — it covers `.env` and `__pycache__`; `site.db`, `celerybeat-schedule.db`, `dump.rdb` should also be excluded
 - [ ] **No input validation layer** — add `marshmallow` or `pydantic` schemas for request bodies
 - [ ] **Redis cache invalidation** — some admin stats cache (`admin_stats`) is deleted manually; could be more systematic
@@ -497,7 +512,6 @@ Generates a CSV of a student's application history and saves it to `frontend/sta
 - [ ] **No frontend build tool** — Vue is loaded via CDN; consider Vite for a production bundle
 - [ ] **`admin_summary` route is a stub** — wire up real analytics
 - [ ] **No rate limiting** — add `Flask-Limiter` on auth endpoints
-- [ ] **Email credentials exposed** — Gmail App Password should never be committed to version control
 
 ---
 

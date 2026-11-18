@@ -1,3 +1,9 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()   # reads optional settings (mail, API keys) from a .env file
+
+
 class Config:
     # Needed for session encryption and connecting the app to the SQLite database file.
     SECRET_KEY = 'mysecretkeyhere'
@@ -29,14 +35,16 @@ class Config:
     timezone = "Asia/Kolkata"
     
     # SMTP Mail Server configurations.
-    # Needed to allow the system to send automated emails (e.g., placement alerts) via Gmail.
-    MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 465
-    MAIL_USE_TLS = False
-    MAIL_USERNAME = 'leenagoyal2403@gmail.com'
-    MAIL_PASSWORD = 'brsehjzzxdquzumq' # Note: Should ideally be an App Password
-    MAIL_DEFAULT_SENDER = ('Placement Portal', 'leenagoyal2403@gmail.com')
-    MAIL_USE_SSL = True
+    # Default: Mailpit, a local test inbox (run `mailpit`, view mail at http://localhost:8025).
+    # No password is needed and no email ever leaves your computer.
+    # To send real email instead, set the MAIL_* variables in a .env file (see .env.example).
+    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'localhost')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT', 1025))
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'false').lower() == 'true'
+    MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL', 'false').lower() == 'true'
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_DEFAULT_SENDER = ('Placement Portal', os.environ.get('MAIL_SENDER', 'noreply@placementportal.local'))
 
     # python3 -m celery -A app.celery_app worker --loglevel=info --pool=solo
     # python3 -m celery -A app.celery_app beat --loglevel=info 
