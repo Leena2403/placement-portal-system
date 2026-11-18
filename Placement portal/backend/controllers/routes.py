@@ -6,6 +6,7 @@ from backend.controllers.authentication_apis import (
     StudentRegisterAPI,
     CompanyRegisterAPI
 )
+from backend.controllers.chatbot_api import ChatbotAPI
 
 def initialize_routes(app):
     # Initializes the Flask-Restful API with a standard '/api' prefix.
@@ -61,3 +62,6 @@ def initialize_routes(app):
     api.add_resource(ReminderSettingsAPI, '/admin/reminder-settings')
     api.add_resource(TriggerRemindersAPI, '/admin/trigger-reminders')
     api.add_resource(TriggerMonthlyReportAPI, '/admin/trigger-monthly-report')
+
+    # AI Placement Assistant (Hugging Face chatbot for students)
+    api.add_resource(ChatbotAPI, '/student/chat')

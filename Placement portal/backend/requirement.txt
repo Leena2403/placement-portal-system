@@ -9,4 +9,6 @@ celery
 redis             
 flask_mail
 python-dotenv      
-email_validator    
+email_validator
+huggingface_hub
+requests

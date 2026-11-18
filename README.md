@@ -10,11 +10,12 @@
 [![Celery](https://img.shields.io/badge/Celery-Task%20Queue-37814A?style=for-the-badge&logo=celery&logoColor=white)](https://docs.celeryq.dev)
 [![Redis](https://img.shields.io/badge/Redis-Cache%20%26%20Broker-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io)
 [![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
+[![Groq](https://img.shields.io/badge/Groq-LLM%20Chatbot-F55036?style=for-the-badge)](https://console.groq.com)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
 
 > Three roles. One platform. Zero missed deadlines.
 
-[Overview](#-overview) · [Features](#-features) · [Architecture](#-architecture) · [Getting Started](#-getting-started) · [API Reference](#-api-reference) · [Database Schema](#-database-schema) · [Background Jobs](#-background-jobs) · [Contributing](#-contributing)
+[Overview](#-overview) · [Features](#-features) · [AI Assistant](#-ai-placement-assistant) · [Architecture](#-architecture) · [Getting Started](#-getting-started) · [API Reference](#-api-reference) · [Database Schema](#-database-schema) · [Background Jobs](#-background-jobs) · [Contributing](#-contributing)
 
 </div>
 
@@ -37,7 +38,7 @@ The system supports **three distinct user roles**, each with a purpose-built das
 |------|-------------|
 | 🛡️ **Admin** | Approves companies, manages all drives & applications, broadcasts notifications, exports reports, configures reminder schedules |
 | 🏢 **Company** | Registers (pending approval), posts placement drives with eligibility criteria, tracks applicants and updates statuses |
-| 🎓 **Student** | Registers, applies to eligible drives, tracks application status, exports personal records, receives deadline reminders |
+| 🎓 **Student** | Registers, applies to eligible drives, tracks application status, exports personal records, receives deadline reminders, chats with the AI Placement Assistant |
 
 ---
 
@@ -69,6 +70,35 @@ The system supports **three distinct user roles**, each with a purpose-built das
 - Export applications as a **CSV file** (async, Celery-powered)
 - View personal placement stats
 - Receive **automated deadline reminder emails** (1–3 days before closing)
+- Ask the **AI Placement Assistant** about open drives, eligibility, application status and interview prep
+
+---
+
+## 🤖 AI Placement Assistant
+
+Students get a floating **💬 Ask Assistant** chat widget on their dashboard. It answers questions using **live portal data**, not guesses.
+
+| | |
+|---|---|
+| **LLM provider** | [Groq](https://console.groq.com) (free API, OpenAI-compatible) |
+| **Model** | `llama-3.3-70b-versatile` by default, configurable with `GROQ_MODEL`. If that model is retired or unavailable, the app asks Groq which models the key can use and switches to an available chat model automatically. |
+| **Fallback** | Hugging Face Inference API (`HF_TOKEN`), used only when `GROQ_API_KEY` is not set |
+| **Endpoint** | `POST /api/student/chat` (student role, token auth) |
+| **Code** | `backend/controllers/chatbot_api.py` · `frontend/static/component/chat_widget.js` |
+
+**How it works**
+
+1. The student sends a message (max 500 characters) along with the last few chat turns.
+2. The backend builds a context block from the database: the student's profile, every approved open drive with an **eligibility verdict** (CGPA, branch and year are checked with the same rules as the Apply button), and the student's own applications.
+3. A system prompt tells the model to answer only from that data and never invent companies, deadlines or results.
+4. The model's reply is returned to the widget.
+
+Blacklisted students cannot use the assistant.
+
+**Example questions**
+- *Which drives am I eligible for?*
+- *What is the status of my applications?*
+- *How should I prepare for a technical interview?*
 
 ---
 
@@ -80,7 +110,7 @@ The system supports **three distinct user roles**, each with a purpose-built das
 │                                                                 │
 │   Vue 3 + Vue Router (Hash History)                             │
 │   ├── Home · Login · Register                                   │
-│   ├── StudentDashboard                                          │
+│   ├── StudentDashboard  (+ AI chat widget)                      │
 │   ├── CompanyDashboard                                          │
 │   └── AdminDashboard                                            │
 └────────────────────────┬────────────────────────────────────────┘
@@ -93,6 +123,7 @@ The system supports **three distinct user roles**, each with a purpose-built das
 │  Flask-CORS     →  Cross-origin support                         │
 │  Flask-Caching  →  Redis-backed (5 min TTL)                     │
 │  Flask-Mail     →  SMTP via Gmail (SSL/465)                     │
+│  Chatbot API    →  Groq LLM (HTTPS) · /api/student/chat         │
 └──────────┬─────────────────────────┬───────────────────────────┘
            │                         │
     ┌──────▼──────┐           ┌──────▼──────┐
@@ -128,6 +159,7 @@ The system supports **three distinct user roles**, each with a purpose-built das
 | Python | 3.11+ |
 | Redis | Any recent version |
 | pip | Latest |
+| Groq API key | Free, from [console.groq.com/keys](https://console.groq.com/keys) (needed only for the AI assistant) |
 
 > Redis must be running locally on port `6379` before starting Flask or Celery.
 
@@ -136,8 +168,8 @@ The system supports **three distinct user roles**, each with a purpose-built das
 ### 1 · Clone the repository
 
 ```bash
-git clone https://github.com/your-username/placement-portal.git
-cd placement-portal
+git clone https://github.com/Leena2403/placement-portal-system.git
+cd "placement-portal-system/Placement portal"
 ```
 
 ### 2 · Set up a virtual environment
@@ -161,7 +193,24 @@ redis-server
 # or if Redis is installed as a service: sudo systemctl start redis
 ```
 
-### 5 · Run the Flask app
+### 5 · Configure the AI assistant (Groq)
+
+Create a free API key at [console.groq.com/keys](https://console.groq.com/keys), then either export it:
+
+```bash
+export GROQ_API_KEY=gsk_your_key_here
+# optional: export GROQ_MODEL=llama-3.1-8b-instant
+```
+
+or copy `.env.example` to `.env` and fill it in (`.env` is git-ignored):
+
+```bash
+cp .env.example .env
+```
+
+> Set the key **before** starting `app.py`, or restart the app after setting it. The rest of the portal works without a key; only the chatbot needs it.
+
+### 6 · Run the Flask app
 
 ```bash
 python app.py
@@ -169,13 +218,13 @@ python app.py
 
 The server starts at **http://127.0.0.1:5000** 🎉
 
-### 6 · Start Celery Worker (new terminal)
+### 7 · Start Celery Worker (new terminal)
 
 ```bash
 python3 -m celery -A app.celery_app worker --loglevel=info --pool=solo
 ```
 
-### 7 · Start Celery Beat — task scheduler (new terminal)
+### 8 · Start Celery Beat — task scheduler (new terminal)
 
 ```bash
 python3 -m celery -A app.celery_app beat --loglevel=info
@@ -200,6 +249,7 @@ python3 -m celery -A app.celery_app beat --loglevel=info
 placement_portal/
 │
 ├── app.py                          # App factory, Celery factory, Celery Beat schedule, SPA catch-all route
+├── .env.example                    # Template for GROQ_API_KEY / GROQ_MODEL (copy to .env)
 │
 ├── backend/
 │   ├── requirement.txt             # Python dependencies
@@ -212,6 +262,7 @@ placement_portal/
 │       ├── routes.py               # API route registration via Flask-RESTful
 │       ├── authentication_apis.py  # Login, Logout, StudentRegister, CompanyRegister
 │       ├── crud_apis.py            # All 20+ REST resource classes
+│       ├── chatbot_api.py          # AI Placement Assistant (Groq LLM + live portal context)
 │       └── tasks.py                # Celery tasks: monthly report, CSV export, deadline reminders
 │
 └── frontend/
@@ -230,6 +281,7 @@ placement_portal/
             ├── login.js            # Login component (stores auth_token in localStorage)
             ├── register.js         # Unified registration (student / company)
             ├── student_dashboard.js  # Full student experience SPA
+            ├── chat_widget.js      # Floating AI assistant chat widget (students)
             ├── company_dashboard.js  # Full company experience SPA
             └── admin_dashboard.js    # Full admin control panel SPA
 ```
@@ -261,6 +313,7 @@ Protected routes require the header: `Authentication-Token: <token>`
 | `GET` | `/api/student/my-applications` | Student | Own application history |
 | `GET` | `/api/student/stats` | Student | Personal stats (applied, selected, etc.) |
 | `POST` | `/api/student/export-trigger` | Student | Async CSV export via Celery |
+| `POST` | `/api/student/chat` | Student | AI Placement Assistant. Body: `{ "message": "...", "history": [...] }` · Returns `{ "reply", "model" }` |
 | `GET` | `/api/student/report/download` | Student | Download generated CSV |
 
 ### 🏢 Companies
@@ -420,12 +473,24 @@ Generates a CSV of a student's application history and saves it to `frontend/sta
 
 ---
 
+## 🛠 Troubleshooting the AI Assistant
+
+| Message | Fix |
+|---------|-----|
+| `Set GROQ_API_KEY (or HF_TOKEN) before starting the app` | Export the key or add it to `.env`, then restart `app.py` |
+| `Groq error 401` | Key is wrong or not set in the terminal running `app.py` (`echo $GROQ_API_KEY`) |
+| `Groq error 404 … model does not exist` | Handled automatically. To choose one yourself, set `GROQ_MODEL` to an id from `GET https://api.groq.com/openai/v1/models` |
+| `Groq error 429` | Free-tier rate limit. Wait a minute or use a smaller model such as `llama-3.1-8b-instant` |
+| `402 Payment Required` (Hugging Face) | Free HF credits are used up. Use Groq instead |
+
+---
+
 ## ⚠️ Known Issues & Improvement Areas
 
 > Great places to contribute!
 
 - [ ] **Hardcoded credentials in `config.py`** — move `SECRET_KEY`, `MAIL_PASSWORD` etc. to `.env` + `python-dotenv`
-- [ ] **No `.gitignore`** — `site.db`, `celerybeat-schedule.db`, `dump.rdb`, `__pycache__` should be excluded
+- [ ] **`.gitignore` is minimal** — it covers `.env` and `__pycache__`; `site.db`, `celerybeat-schedule.db`, `dump.rdb` should also be excluded
 - [ ] **No input validation layer** — add `marshmallow` or `pydantic` schemas for request bodies
 - [ ] **Redis cache invalidation** — some admin stats cache (`admin_stats`) is deleted manually; could be more systematic
 - [ ] **No pagination** on list endpoints — large datasets will slow down responses
@@ -466,7 +531,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 <div align="center">
 
-Built with ❤️ using Flask · Vue 3 · Celery · Redis · SQLAlchemy
+Built with ❤️ using Flask · Vue 3 · Celery · Redis · SQLAlchemy · Groq
 
 ⭐ Star this repo if it helped you!
 

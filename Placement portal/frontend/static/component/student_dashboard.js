@@ -406,7 +406,10 @@ const StudentDashboard = {
             </div>
         </div>
 
+        <chat-widget v-if="!isBlacklisted"></chat-widget>
     </div>`,
+
+    components: { 'chat-widget': ChatWidget },
 
     data() {
         return {
